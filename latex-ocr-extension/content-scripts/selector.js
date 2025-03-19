@@ -1,3 +1,16 @@
+// At the beginning of your file, check if DOMPurify is loaded
+if (typeof DOMPurify === 'undefined') {
+  console.error("DOMPurify is not defined. HTML sanitization will not be available.");
+  
+  // Create a simple sanitizer fallback
+  window.DOMPurify = {
+    sanitize: function(html) {
+      console.warn("Using fallback sanitizer - security risk!");
+      return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+    }
+  };
+}
+
 let isSelecting = false;
 let startX, startY;
 let selectionBox = null;
@@ -402,7 +415,7 @@ function tryMathJaxFallback(latexCode, container) {
 
 // Function to render LaTeX safely with KaTeX
 function renderLatexSafely(latexCode, container) {
-  console.log("Rendering LaTeX with basic renderer:", latexCode);
+  console.log("Attempting to render LaTeX:", latexCode);
   
   // Handle the case where the formula is surrounded by $ 
   let cleanLatex = latexCode.trim();
@@ -410,7 +423,35 @@ function renderLatexSafely(latexCode, container) {
     cleanLatex = cleanLatex.substring(1, cleanLatex.length - 1);
   }
   
-  // Due to CSP restrictions, we'll just use our basic renderer
+  // Try to use KaTeX if available
+  if (window.katex) {
+    try {
+      console.log("Rendering with KaTeX");
+      window.katex.render(cleanLatex, container, {
+        throwOnError: false,
+        displayMode: true,
+        output: "html",
+        trust: false // Don't trust the LaTeX code (safer)
+      });
+      
+      // Add attribution
+      const attribution = document.createElement('div');
+      attribution.style.fontSize = '10px';
+      attribution.style.textAlign = 'right';
+      attribution.style.color = '#666';
+      attribution.style.marginTop = '5px';
+      attribution.textContent = 'Rendered with KaTeX';
+      container.appendChild(attribution);
+      
+      return; // Successfully rendered with KaTeX
+    } catch (err) {
+      console.error("KaTeX rendering error:", err);
+      // Fall through to basic renderer
+    }
+  }
+  
+  // Fallback to basic renderer if KaTeX not available or rendering failed
+  console.log("Falling back to basic renderer");
   renderBasicChemicalFormula(cleanLatex, container);
 }
 
@@ -532,7 +573,9 @@ function renderBasicChemicalFormula(formula, container) {
     // Remove remaining LaTeX commands that we don't specifically handle
     .replace(/\\[a-zA-Z]+/g, '');
   
-  formulaDiv.innerHTML = processedFormula;
+  // Use DOMPurify to sanitize the HTML before inserting it
+  const sanitizedHtml = DOMPurify.sanitize(processedFormula);
+  formulaDiv.innerHTML = sanitizedHtml;
   container.appendChild(formulaDiv);
   
   // Add a disclaimer only in very complex formulas
@@ -575,15 +618,44 @@ function renderAsFormattedText(latexCode, container) {
     .replace(/\_/g, '<span style="color:#cc6600;">_</span>')
     .replace(/\^/g, '<span style="color:#cc6600;">^</span>');
   
-  formattedDiv.innerHTML = formatted;
+  // Use DOMPurify to sanitize the formatted HTML
+  const sanitizedHtml = DOMPurify.sanitize(formatted);
+  formattedDiv.innerHTML = sanitizedHtml;
   container.appendChild(formattedDiv);
 }
 
 function loadKaTeX(callback) {
-  // Given the CSP restrictions, we're going to skip KaTeX loading entirely
-  // and go straight to our basic chemical formula renderer
-  console.log("Using basic renderer due to Content Security Policy restrictions");
-  callback();
+  if (window.katex) {
+    console.log("KaTeX is already loaded");
+    callback();
+    return;
+  }
+
+  console.log("Loading bundled KaTeX...");
+  
+  try {
+    // Load KaTeX CSS
+    const katexCSS = document.createElement('link');
+    katexCSS.rel = 'stylesheet';
+    katexCSS.href = chrome.runtime.getURL('lib/katex/katex.min.css');
+    document.head.appendChild(katexCSS);
+
+    // Load KaTeX JS
+    const katexScript = document.createElement('script');
+    katexScript.src = chrome.runtime.getURL('lib/katex/katex.min.js');
+    katexScript.onload = function() {
+      console.log("KaTeX loaded successfully");
+      callback();
+    };
+    katexScript.onerror = function(e) {
+      console.error("Failed to load KaTeX:", e);
+      callback(); // Continue with fallback renderer
+    };
+    document.head.appendChild(katexScript);
+  } catch (err) {
+    console.error("Error while loading KaTeX:", err);
+    callback(); // Continue with fallback renderer
+  }
 }
 
 // Also update showError to reset the flag if there's an error

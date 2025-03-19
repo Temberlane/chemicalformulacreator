@@ -37,7 +37,13 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["content-scripts/fonts/*"],
+      "resources": [
+        "content-scripts/fonts/*",
+        "content-scripts/purify.min.js",
+        "lib/katex/katex.min.css",
+        "lib/katex/katex.min.js",
+        "lib/katex/fonts/*"
+      ],
       "matches": ["<all_urls>"]
     }
   ],

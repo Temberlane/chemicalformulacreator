@@ -3,6 +3,7 @@
   "name": "YMSS Image Recognition",
   "version": "1.0",
   "description": "Capture screen selections, recognize text with OpenAI, and render LaTeX",
+
   "permissions": [
     "activeTab",
     "scripting",
@@ -12,11 +13,14 @@
   "host_permissions": [
     "https://api.openai.com/*"
   ],
+  "icons": {
+    "32": "icons/icon-32.png",
+    "128": "icons/icon-128.png"
+  },
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "48": "icons/icon-48.png",
-      "96": "icons/icon-96.png",
+      "32": "icons/icon-32.png",
       "128": "icons/icon-128.png"
     }
   },

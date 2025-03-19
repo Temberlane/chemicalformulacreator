@@ -592,14 +592,45 @@ function showError(message) {
   
   const errorDiv = document.createElement('div');
   errorDiv.id = 'latex-ocr-error';
+  errorDiv.style.position = 'fixed';
+  errorDiv.style.top = '20px';
+  errorDiv.style.left = '50%';
+  errorDiv.style.transform = 'translateX(-50%)';
+  errorDiv.style.backgroundColor = '#f44336';
+  errorDiv.style.color = 'white';
+  errorDiv.style.padding = '15px 20px';
+  errorDiv.style.borderRadius = '4px';
+  errorDiv.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
+  errorDiv.style.zIndex = '100001';
+  errorDiv.style.display = 'flex';
+  errorDiv.style.justifyContent = 'space-between';
+  errorDiv.style.alignItems = 'center';
+  errorDiv.style.minWidth = '300px';
+  errorDiv.style.maxWidth = '80%';
   
   const messageEl = document.createElement('span');
   messageEl.textContent = message;
+  messageEl.style.flex = '1';
+  messageEl.style.marginRight = '15px';
   errorDiv.appendChild(messageEl);
   
   const closeButton = document.createElement('button');
   closeButton.textContent = '×';
   closeButton.className = 'latex-ocr-close';
+  closeButton.style.background = 'none';
+  closeButton.style.border = 'none';
+  closeButton.style.color = 'white';
+  closeButton.style.fontSize = '24px';
+  closeButton.style.cursor = 'pointer';
+  closeButton.style.padding = '0';
+  closeButton.style.lineHeight = '24px';
+  closeButton.style.height = '24px';
+  closeButton.style.width = '24px';
+  closeButton.style.display = 'flex';
+  closeButton.style.justifyContent = 'center';
+  closeButton.style.alignItems = 'center';
+  closeButton.style.marginLeft = 'auto';
+  
   closeButton.addEventListener('click', function() {
     errorDiv.remove();
   });

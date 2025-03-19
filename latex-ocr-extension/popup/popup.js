@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
   toggleVisibilityButton.addEventListener('click', () => {
     if (apiKeyInput.type === 'password') {
       apiKeyInput.type = 'text';
-      toggleVisibilityButton.textContent = '🔒';
+      toggleVisibilityButton.textContent = '👁️';
     } else {
       apiKeyInput.type = 'password';
-      toggleVisibilityButton.textContent = '👁️';
+      toggleVisibilityButton.textContent = '🔒';
     }
   });
   

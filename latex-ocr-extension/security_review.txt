@@ -1,0 +1,5 @@
+This extension uses `DOMPurify.sanitize()` to clean all dynamic content before setting `innerHTML`, preventing XSS risks.
+
+Example:
+const sanitizedHtml = DOMPurify.sanitize(processedFormula);
+formulaDiv.innerHTML = sanitizedHtml;

@@ -90,7 +90,7 @@ async function processImageWithOpenAI(imageData) {
             content: [
               {
                 type: "text",
-                text: "Extract any mathematical expressions, chemical formula or text from this image and convert it to LaTeX. Return only the LaTeX code without any explanations. Format the LaTeX such that it is inline (meaning it is surrounded by $ symbols). Use inbuilt symbols as nessesary, for example using \rightarrow and not \\rightarrow."
+                text: "Extract any mathematical expressions, chemical formula or text from this image and convert it to LaTeX. Return only the LaTeX code without any explanations. Format the LaTeX such that it is inline (meaning it is surrounded by $ symbols). Use inbuilt symbols as nessesary, for example using \rightarrow and not \\rightarrow. IF NO FORMULA OR ANYTHING IS DETECTED, RETURN SOLELY THE TEXT."
               },
               {
                 type: "image_url",
